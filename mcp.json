@@ -1,12 +1,13 @@
 {
   "mcpServers": {
     "appflowy": {
-      "command": "python",
-      "args": ["src/appflowy_mcp.py"],
-      "cwd": "D:/DO/WEB/TOOLS/appflowy-mcp-server",
+      "command": "python3",
+      "args": [
+        "src/appflowy_mcp.py"
+      ],
       "env": {
-        "APPFLOWY_BASE_URL": "https://api.appflowy.io",
-        "APPFLOWY_TOKEN": "${APPFLOWY_TOKEN}"
+        "APPFLOWY_BASE_URL": "http://appflowy_backend:8000",
+        "APPFLOWY_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYmNjNGYxZC05OTg5LTRmZTgtOTQxOC1kMDhlZTRjOTk5N2YiLCJhdWQiOiIiLCJleHAiOjE3ODE1NDg4NzYsImlhdCI6MTc4MTU0MTY3NiwiZW1haWwiOiJiYXJhbW9mbWVAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsiaXNfc3lzdGVtX2FkbWluIjp0cnVlLCJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiYmFyYW1vZm1lQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImFiY2M0ZjFkLTk5ODktNGZlOC05NDE4LWQwOGVlNGM5OTk3ZiJ9LCJyb2xlIjoic2VydmljZV9yb2xlIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoib3RwIiwidGltZXN0YW1wIjoxNzgxNTM0MjEwfV0sInNlc3Npb25faWQiOiJlMDBjMTE4Zi1jZGU2LTQ5ODgtOTI3My01ZGNmYjhmM2IzZjciLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.PMEJ8_200qRYE2-IdguzY1IzOAOYjHwOEIWPzUeMjq0"
       }
     }
   }

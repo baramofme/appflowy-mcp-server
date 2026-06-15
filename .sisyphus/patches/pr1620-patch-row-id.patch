@@ -1,0 +1,68 @@
+From: makvitaly
+Date: 2026-05-15
+Subject: feat: add PATCH /database/{db}/row/{row_id} for id-stable row upsert
+
+AppFlowy-IO/AppFlowy-Cloud PR #1620
+
+Adds a PATCH endpoint that upserts a database row by a client-provided
+row_id from the URL path, preserving cells not sent in the body.
+
+The PUT /row endpoint already implements the same business logic but
+derives the row_id from SHA256(workspace_id + database_id + pre_hash),
+which is unusable when the row_id is known but the pre_hash isn't
+(e.g. rows created via the UI).
+
+The PATCH endpoint takes the row_id directly from the URL, accepts the
+same AddDatatabaseRow { cells, document } body as POST /row, and
+delegates to the existing biz::collab::ops::upsert_database_row.
+
+diff --git a/src/api/workspace.rs b/src/api/workspace.rs
+index da06efa34..f113202fd 100644
+--- a/src/api/workspace.rs
++++ b/src/api/workspace.rs
+@@ -403,6 +403,10 @@ pub fn workspace_scope() -> Scope {
+       web::resource("/{workspace_id}/database/{database_id}/row/detail")
+         .route(web::get().to(list_database_row_details_handler)),
+     )
++    .service(
++      web::resource("/{workspace_id}/database/{database_id}/row/{row_id}")
++        .route(web::patch().to(patch_database_row_handler)),
++    )
+     .service(
+       web::resource("/{workspace_id}/quick-note")
+         .route(web::get().to(list_quick_notes_handler))
+@@ -2615,6 +2619,34 @@ async fn post_database_row_handler(
+   Ok(Json(AppResponse::Ok().with_data(new_db_row_id)))
+ }
+ 
++async fn patch_database_row_handler(
++  user_uuid: UserUuid,
++  path_param: web::Path<(Uuid, Uuid, Uuid)>,
++  state: Data<AppState>,
++  add_database_row: Json<AddDatatabaseRow>,
++) -> Result<Json<AppResponse<()>>> {
++  let (workspace_id, db_id, row_id) = path_param.into_inner();
++  let uid = state.user_cache.get_user_uid(&user_uuid).await?;
++  state
++    .workspace_access_control
++    .enforce_action(&uid, &workspace_id, Action::Write)
++    .await?;
++
++  let AddDatatabaseRow { cells, document } = add_database_row.into_inner();
++
++  biz::collab::ops::upsert_database_row(
++    &state,
++    workspace_id,
++    db_id,
++    uid,
++    row_id,
++    cells,
++    document,
++  )
++  .await?;
++  Ok(Json(AppResponse::Ok()))
++}
++
+ async fn put_database_row_handler(
+   user_uuid: UserUuid,
+   path_param: web::Path<(Uuid, Uuid)>,
